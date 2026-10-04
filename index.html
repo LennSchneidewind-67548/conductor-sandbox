@@ -1,5 +1,28 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Water</title></head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Water</title>
+    <style>
+      body { margin: 0; padding: 24px 16px; font: 16px/1.4 system-ui, -apple-system, sans-serif; color: #16232c; }
+      #app { max-width: 360px; margin: 0 auto; display: grid; gap: 12px; }
+      h1 { margin: 0; }
+      .goal-row { display: flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+      .goal-label { color: #5d6d78; font-size: .9rem; margin-right: 4px; }
+      .goal-value { font-weight: 600; min-width: 4.5em; text-align: center; }
+      .step-btn { width: 30px; height: 30px; padding: 0; border-radius: 8px; border: 1px solid #d6e0e6; background: #f3f6f8; font: inherit; font-size: 1rem; line-height: 1; }
+      .step-btn[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }
+      .bar-wrap { position: relative; }
+      .bar { height: 34px; border-radius: 10px; background: #dde8f1; overflow: hidden; }
+      .bar-fill { height: 100%; width: 0; border-radius: 10px; background: #2b7fd4; transition: width 200ms ease-out, background-color 200ms ease-out; }
+      .bar.is-reached .bar-fill { background: #2f9e5b; }
+      .bar-text { position: absolute; inset: 0; margin: 0; display: flex; align-items: center; padding-inline: 12px; font-size: .85rem; font-weight: 600; color: #0a1116; font-variant-numeric: tabular-nums; pointer-events: none; }
+      #goal-status { margin-top: -12px; }
+      .badge { display: inline-block; justify-self: start; margin-top: 12px; background: #e3f4ea; color: #1f7a43; font-weight: 600; font-size: .85rem; padding: 3px 10px; border-radius: 999px; }
+      #add { justify-self: start; }
+      @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
+    </style>
+  </head>
   <body><div id="app"></div><script type="module" src="/src/main.ts"></script></body>
 </html>
