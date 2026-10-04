@@ -19,6 +19,13 @@ Locked (coordinator):
 - The bar and text update as soon as the goal or the glass count changes.
 - No new dependencies.
 
+Locked (user visual picks, 2026-10-04; mockups: https://claude.ai/artifact/Q5L13xfYr5ZpHvSwbSHqzE):
+- **Bar (pick 1 → option 2):** a thick rounded bar (about 34px) with the "X / Y ml (N%)" text drawn inside it, left-aligned, replacing the separate text line visually. The text must stay readable over both the track and the fill, and stay available to screen readers.
+- **Stepper (pick 2 → option 3):** its own row at the top, under the heading, before the bar: `Goal  [−]  2000 ml  [+]`.
+- **Goal reached (pick 3 → option 3):** the fill turns green and a small "✓ Goal reached" pill badge appears under the bar. No other message.
+- **Percentage (pick 4 → option 2):** the "N%" shows the real, uncapped percentage (e.g. "2500 / 2000 ml (125%)"). The bar width stays capped at 100%.
+- Page order: heading, goal stepper row, bar (with text inside), badge (only when reached), "+ glass" button.
+
 ## Architecture
 
 The app is three files: `index.html` (shell), `src/main.ts` (DOM and state) and `src/water.ts` (pure logic, tested in `src/water.test.ts`). The feature keeps that split. New rules go into `water.ts` as pure functions, and `main.ts` only wires them to the DOM.
@@ -54,18 +61,18 @@ Tests go in `src/water.test.ts`: stepping up and down by 250, clamping at 500 an
   - `#goal-reached`: the "goal reached" message. It is hidden with the `hidden` attribute until `goalReached()` is true. When reached, `update()` also adds the `is-reached` class to `#bar`.
   - `#add`: the existing "+ glass" button.
   - The goal stepper: `#goal-dec` (−), `#goal-value` ("2000 ml") and `#goal-inc` (+). The buttons have `aria-label`s "Decrease goal" and "Increase goal". `#goal-value` has `aria-live="polite"`.
-- **Default, pending decision:** order on the page is heading, summary text, bar, goal-reached message, "+ glass" button, then a "Goal" stepper row. See open visual decisions 1–3.
+- Order on the page: see the visual picks in Decisions (these supersede any other order in this section).
 
 ### `index.html`: styles
 
 There is no stylesheet today. Add one `<style>` block in `<head>` for the bar track, the fill, the reached state and the stepper row. The fill gets `transition: width 200ms ease-out`, which is turned off under `prefers-reduced-motion: reduce`.
-- **Default, pending decision:** a light grey rounded track 12px tall at full content width, a blue fill (`#2b7de9`), and a green fill (`#2e9d5b`) when reached.
+- A light grey rounded track about 34px tall at full content width with the text inside, a blue fill (`#2b7de9`), a green fill (`#2e9d5b`) when reached, and a green pill badge. See the visual picks in Decisions.
 
 ### Rulings made in this plan
 
 - Logic goes in `water.ts` and only wiring goes in `main.ts`. Vitest runs in its default Node environment with no DOM library, and adding jsdom would add a dependency. So only the pure functions get unit tests, and the DOM is checked in the browser.
 - The bar is a styled `div` with `role="progressbar"`, not a native `<progress>`. A native `<progress>` needs vendor pseudo-elements to style the same way in every browser.
-- At 100% or more, the "N%" in the text line stays capped at 100%, as `progress()` does today. The "X ml" part already shows the real total. **Default, pending decision:** see open visual decision 4.
+- The "N%" in the text uses the real, uncapped ratio (user pick 4). `progress()` stays capped and drives the bar width; add an uncapped helper (or compute total/goal) for the text, with a unit test.
 
 ## Phases
 
@@ -77,20 +84,4 @@ P1 is small: about 150 changed lines across `water.ts`, `water.test.ts`, `main.t
 
 ## Open visual decisions
 
-The user picks these; the plan uses the first option of each until then.
-
-1. **Bar look and placement**
-   1. A thin rounded bar (12px), full width, directly under the "X / Y ml (N%)" line, blue fill. *(default)*
-   2. A thick bar (about 28px) with the "X / Y ml (N%)" text drawn inside it.
-   3. The bar above the text line, right under the heading.
-2. **Stepper placement and look**
-   1. Its own row under the "+ glass" button: `Goal  [−]  2000 ml  [+]`. *(default)*
-   2. Next to the goal number in the text line, so the "Y ml" itself sits between − and +.
-   3. At the top, under the heading, before the progress.
-3. **"Goal reached" copy and styling**
-   1. The bar fill turns green and the line "Goal reached!" appears under the bar. *(default)*
-   2. Only the bar color changes, with no extra text.
-   3. A small "✓ Goal reached" badge after the text line, and the bar turns green.
-4. **Percentage above 100%**
-   1. Keep it capped at 100%, as today ("2500 / 2000 ml (100%)"). *(default)*
-   2. Show the real percentage ("2500 / 2000 ml (125%)") while the bar stays full.
+All resolved on 2026-10-04; see Decisions.
